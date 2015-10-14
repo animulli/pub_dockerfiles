@@ -1,0 +1,29 @@
+# Dockerfile for dev environment: ubuntu-14-trusty
+
+From ubuntu:trusty
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
+RUN apt-get -y update
+
+# install python-software-properties (so you can do add-apt-repository)
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q python-software-properties software-properties-common
+
+RUN apt-get install apt-transport-https
+
+# install SSH server so we can connect multiple times to the container
+RUN apt-get -y install openssh-server && mkdir /var/run/sshd
+
+# install utilities
+RUN apt-get -y install vim git sudo zip bzip2 fontconfig curl jq tree
+
+RUN mkdir /installs
+RUN cd /installs && \
+git clone https://github.com/facebook/PathPicker.git && \
+cd PathPicker/ && \
+ln -s "$(pwd)/fpp" /usr/local/bin/fpp
+
+#Install BaseMount
+RUN curl -L https://basemount.basespace.illumina.com/install | sudo bash -
+
+CMD ["/bin/bash"]
